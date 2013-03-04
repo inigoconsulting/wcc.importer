@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<layers>
+    <layer name="wcc.importer"
+        interface="wcc.importer.interfaces.IProductSpecific" />
+</layers>
