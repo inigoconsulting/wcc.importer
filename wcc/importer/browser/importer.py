@@ -18,7 +18,7 @@ class IUploadFormSchema(form.Schema):
 
     import_file = NamedFile(title=_('Upload import JSON'))
     importer = schema.Choice(title=_("Importer"),
-            values=["wcc.importer.newsimporter"])
+            vocabulary="wcc.importer")
 
 class UploadForm(form.SchemaForm):
 
@@ -27,7 +27,7 @@ class UploadForm(form.SchemaForm):
     ignoreContext = True
     grok.layer(IProductSpecific)
     grok.context(IFolderish)
-    grok.name('import-content')
+    grok.name('import-contents')
 
     @z3c.form.button.buttonAndHandler(_("Import"), name='import')
     def import_content(self, action):
