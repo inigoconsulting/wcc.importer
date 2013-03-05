@@ -28,6 +28,8 @@ class UploadForm(form.SchemaForm):
     grok.layer(IProductSpecific)
     grok.context(IFolderish)
     grok.name('import-contents')
+    grok.require('cmf.AddPortalContent')
+
 
     @z3c.form.button.buttonAndHandler(_("Import"), name='import')
     def import_content(self, action):

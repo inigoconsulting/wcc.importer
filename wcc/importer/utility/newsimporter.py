@@ -1,39 +1,23 @@
 from five import grok
-from wcc.importer.interfaces import IImporter
-from zope.container.interfaces import INameChooser
-import time
-import transaction
 import dateutil.parser
 from zope.annotation.interfaces import IAnnotations
 from persistent.dict import PersistentDict
-from wcc.importer.interfaces import IImporter
 import logging
 logger = logging.getLogger("wcc.importer")
 from base64 import b64decode
+from wcc.importer.utility.base import BaseImporter
 
-class NewsImporter(grok.GlobalUtility):
+class NewsImporter(BaseImporter):
     grok.name('wcc.importer.newsimporter')
-    grok.implements(IImporter)
-    grok.require('cmf.AddPortalContent')
 
-    def run_import(self, container, data):
-        for entry in data:
-            self.create_news(container, entry)
-
-    def create_news(self, container, entry):
+    def _factory(self, container, entry):
         logger.info("Creating News Item : %s" % entry['title'])
 
-        oid = container.invokeFactory(type_name="News Item", id=time.time())
-        transaction.savepoint(optimistic=True)
+        oid = self._create_obj_for_title(container, 'News Item', entry['title'])
         obj = container._getOb(oid)
 
-        # set id
-        oid = INameChooser(container).chooseName(entry['title'], obj)
-        obj.setId(oid)
-
-        # set title
-
-        obj.setTitle(entry['title'])
+        # set description
+        obj.setDescription(entry['description'])
 
         # set effectiveDate
         d,m,y = entry['effectiveDate'].split('.')
