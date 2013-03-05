@@ -29,6 +29,7 @@ setup(name='wcc.importer',
           'plone.app.dexterity',
           'plone.namedfile [blobs]',
           'collective.grok',
+          'collective.z3cform.grok',
           # -*- Extra requirements: -*-
       ],
       extras_require={
