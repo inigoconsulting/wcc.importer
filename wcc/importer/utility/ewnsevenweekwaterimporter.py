@@ -81,6 +81,7 @@ class EWNSWWImporter(BaseImporter):
         if entry.get('imageCaption', None):
             page.getField('imageCaption').set(page, entry['imageCaption'])
 
+        obj.setDefaultPage(pageoid)
 
         # remember original url
         anno = IAnnotations(page)
