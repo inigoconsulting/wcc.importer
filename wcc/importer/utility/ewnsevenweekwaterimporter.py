@@ -81,6 +81,9 @@ class EWNSWWImporter(BaseImporter):
         if entry.get('imageCaption', None):
             page.getField('imageCaption').set(page, entry['imageCaption'])
 
+        if entry.get('video_url', None):
+            page.getField('video_url').set(page, entry['video_url'])
+
         obj.setDefaultPage(pageoid)
 
         # remember original url
