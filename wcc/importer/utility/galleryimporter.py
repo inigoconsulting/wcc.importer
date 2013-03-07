@@ -36,6 +36,12 @@ class GalleryImporter(BaseImporter):
         pageobj.getField('text').set(pageobj, entry['bodytext'])
         # obj.setDefaultPage(pageoid)
         obj.setLayout('atct_album_view')
+
+        anno = IAnnotations(obj)
+        anno.setdefault('wcc.metadata', PersistentDict())
+        anno['wcc.metadata']['original_url'] = entry['orig_url']
+        anno['wcc.metadata']['lang_urls'] = entry['lang_urls']
+
         pageobj.reindexObject()
         obj.reindexObject()
 

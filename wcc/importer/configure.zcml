@@ -16,6 +16,8 @@
     <include package=".behavior"/>
     <include package=".portlet"/>
 
+    <adapter name="wcc_original_url" factory=".indexers.wcc_original_url"/>
+
     <!-- -*- extra stuff goes here -*- -->
 
 </configure>
