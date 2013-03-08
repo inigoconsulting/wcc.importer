@@ -13,10 +13,13 @@ class RawHTMLImporter(BaseImporter):
     def _factory(self, container, entry):
         logger.info("Creating RAWHTML Item : %s" % entry['title'])
 
-        oid = self._create_obj_for_title(container, 'wcc.rawhtml.rawhtml', entry['title'])
+        oid = self._create_obj_for_title(container, 'wcc.rawhtml.rawhtml',
+                entry['name'])
         obj = container._getOb(oid)
 
+        obj.title = entry['title']
         obj.raw_html = entry['raw_html']
+        obj.type_tag = entry['type_tag']
 
         # remember original url
         anno = IAnnotations(obj)
