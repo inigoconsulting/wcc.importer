@@ -10,9 +10,18 @@ import urlparse
 import os
 from Acquisition import aq_parent
 import transaction
+import pprint
 
 def _clean_url(url):
-    return url.replace('?print=1_%2F', '').replace('&print=1_%2F','')
+    return url.replace('?print=1_%2F',
+            '').replace('&print=1_%2F',
+            '').replace('?print=1','')
+
+def _clean_langurls(lang_urls):
+    newdict = {}
+    for k, v in lang_urls.items():
+        newdict[k] = _clean_url(v)
+    return newdict
 
 class EWNSWWImporter(BaseImporter):
     grok.name('wcc.importer.ewnsevenweekwaterimporter')
@@ -47,6 +56,7 @@ class EWNSWWImporter(BaseImporter):
 
     def _factory(self, container, entry):
         logger.info("Creating EWNSWW Item : %s" % entry['title'])
+        logger.info("orig_url: %s" % _clean_url(entry['orig_url']))
         # find container
         parent = self._find_parent(container, entry['orig_url'])
 
@@ -90,7 +100,10 @@ class EWNSWWImporter(BaseImporter):
         anno = IAnnotations(page)
         anno.setdefault('wcc.metadata', PersistentDict())
         anno['wcc.metadata']['original_url'] = entry['orig_url']
-        anno['wcc.metadata']['lang_urls'] = entry['lang_urls']
+        anno['wcc.metadata']['lang_urls'] = _clean_langurls(
+            entry['lang_urls']
+        )
+        pprint.pprint(_clean_langurls(entry['lang_urls']))
 
         page.reindexObject()
         obj.reindexObject()

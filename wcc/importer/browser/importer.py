@@ -17,6 +17,9 @@ import urlparse
 from plone.app.redirector.interfaces import IRedirectionStorage
 from zope.component import getUtility
 from Products.CMFCore.interfaces import ISiteRoot
+from plone.multilingual.interfaces import ITranslationManager
+import logging
+logger = logging.getLogger('wcc.importer')
 
 grok.templatedir('templates')
 
@@ -54,18 +57,44 @@ class UploadForm(form.SchemaForm):
     @z3c.form.button.buttonAndHandler(_("Setup redirects"),
                                         name='add-redirect')
     def add_redirect(self, action):
-        for i in self.context.portal_catalog():
+        for i in self.context.portal_catalog(Language='all'):
             obj = i.getObject()
             anno = IAnnotations(obj).get('wcc.metadata', {})
             from_url = anno.get('original_url', None)
+            id_url = anno.get('id_url', None)
             if not from_url:
                 continue
+            logger.info("Setting redirects for %s" % obj.absolute_url())
             from_url = urlparse.urlparse(from_url).path
             portal = getUtility(ISiteRoot)
             from_url = '/'.join(portal.getPhysicalPath()) + from_url
+            if id_url:
+                id_url = '/'.join(portal.getPhysicalPath()) + id_url
             to_url = '/'.join(obj.getPhysicalPath())
             storage = getUtility(IRedirectionStorage)
             if storage.has_path(from_url):
                 storage.remove(from_url)
+            if id_url and storage.has_path(id_url):
+                storage.remove(id_url)
             storage.add(from_url, to_url)
+            if id_url:
+                storage.add(id_url, to_url)
         IStatusMessage(self.request).addStatusMessage(_("Redirection added"))
+
+    @z3c.form.button.buttonAndHandler(_("Map multilingual"),
+                                name='map-multilingual')
+    def map_multilingual(self, action):
+        for i in self.context.portal_catalog():
+            obj = i.getObject()
+            anno = IAnnotations(obj).get('wcc.metadata', {})
+            if not anno.get('lang_urls', None):
+                continue
+            lang_urls = anno.get('lang_urls')
+            logger.info('Setting language map for %s' % obj.absolute_url())
+            for lang, url in lang_urls.items():
+                brains = self.context.portal_catalog(Language='all',
+                    wcc_original_url=url)
+                if not brains:
+                    continue
+                content = brains[0].getObject()
+                ITranslationManager(obj).register_translation(lang, content)
