@@ -12,17 +12,6 @@ from Acquisition import aq_parent
 import transaction
 import pprint
 
-def _clean_url(url):
-    return url.replace('?print=1_%2F',
-            '').replace('&print=1_%2F',
-            '').replace('?print=1','')
-
-def _clean_langurls(lang_urls):
-    newdict = {}
-    for k, v in lang_urls.items():
-        newdict[k] = _clean_url(v)
-    return newdict
-
 class EWNSWWImporter(BaseImporter):
     grok.name('wcc.importer.ewnsevenweekwaterimporter')
 
@@ -32,18 +21,16 @@ class EWNSWWImporter(BaseImporter):
         tx_pages = [i for i in data if 'tx_wecdiscussion' in i['orig_url']]
         data = [i for i in data if 'tx_wecdiscussion' not in i['orig_url']]
         for entry in data:
-            cleanurl = _clean_url(entry['orig_url'])
-            if cleanurl in tracker:
+            if entry['orig_url'] in tracker:
                 continue
             self._factory(container, entry)
-            tracker.append(cleanurl)
+            tracker.append(entry['orig_url'])
 
         for entry in sorted(tx_pages, key=lambda x: x['orig_url']):
-            cleanurl = _clean_url(entry['orig_url'])
-            if cleanurl in tracker:
+            if entry['orig_url'] in tracker:
                 continue
             self._factory(container, entry)
-            tracker.append(cleanurl)
+            tracker.append(entry['orig_url'])
 
     def _find_parent(self, container, orig_url):
         parent_url = os.path.dirname(orig_url) + '.html'
@@ -56,7 +43,7 @@ class EWNSWWImporter(BaseImporter):
 
     def _factory(self, container, entry):
         logger.info("Creating EWNSWW Item : %s" % entry['title'])
-        logger.info("orig_url: %s" % _clean_url(entry['orig_url']))
+        logger.info("orig_url: %s" % entry['orig_url'])
         # find container
         parent = self._find_parent(container, entry['orig_url'])
 
@@ -100,10 +87,8 @@ class EWNSWWImporter(BaseImporter):
         anno = IAnnotations(page)
         anno.setdefault('wcc.metadata', PersistentDict())
         anno['wcc.metadata']['original_url'] = entry['orig_url']
-        anno['wcc.metadata']['lang_urls'] = _clean_langurls(
-            entry['lang_urls']
-        )
-        pprint.pprint(_clean_langurls(entry['lang_urls']))
+        anno['wcc.metadata']['lang_urls'] = entry['lang_urls']
+        pprint.pprint(entry['lang_urls'])
 
         page.reindexObject()
         obj.reindexObject()
