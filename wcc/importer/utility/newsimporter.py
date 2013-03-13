@@ -20,8 +20,7 @@ class NewsImporter(BaseImporter):
         obj.setDescription(entry['description'])
 
         # set effectiveDate
-        d,m,y = entry['effectiveDate'].split('.')
-        edate = dateutil.parser.parse('%s-%s-%s' % (y,m,d))
+        edate = dateutil.parser.parse(entry['effectiveDate'])
         obj.getField('effectiveDate').set(obj, edate)
 
         # set bodytext
