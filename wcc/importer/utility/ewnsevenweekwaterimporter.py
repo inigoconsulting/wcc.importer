@@ -21,8 +21,13 @@ class EWNSWWImporter(BaseImporter):
         tx_pages = [i for i in data if 'tx_wecdiscussion' in i['orig_url']]
         data = [i for i in data if 'tx_wecdiscussion' not in i['orig_url']]
         for entry in data:
+            entry['orig_url'] = self._clean_url(entry['orig_url'])
+            if entry.has_key('lang_urls'):
+                entry['lang_urls'] = self._clean_langurls(entry['lang_urls'])
+
             if entry['orig_url'] in tracker:
                 continue
+
             self._factory(container, entry)
             tracker.append(entry['orig_url'])
 
