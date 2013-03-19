@@ -41,6 +41,7 @@ class GalleryImporter(BaseImporter):
         anno.setdefault('wcc.metadata', PersistentDict())
         anno['wcc.metadata']['original_url'] = entry['orig_url']
         anno['wcc.metadata']['lang_urls'] = entry['lang_urls']
+        anno['wcc.metadata']['id_url'] = entry.get('id_url', None)
 
         pageobj.reindexObject()
         obj.reindexObject()

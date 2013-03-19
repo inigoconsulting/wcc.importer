@@ -95,6 +95,7 @@ class UploadForm(form.SchemaForm):
                 brains = self.context.portal_catalog(Language='all',
                     wcc_original_url=url)
                 if not brains:
+                    logger.info('No Objects Found! : %s' % url)
                     continue
                 content = brains[0].getObject()
                 ITranslationManager(obj).register_translation(lang, content)
