@@ -30,6 +30,7 @@ setup(name='wcc.importer',
           'plone.namedfile [blobs]',
           'collective.grok',
           'collective.z3cform.grok',
+          'pyquery'
           # -*- Extra requirements: -*-
       ],
       extras_require={

@@ -19,6 +19,7 @@ from zope.component import getUtility
 from Products.CMFCore.interfaces import ISiteRoot
 from plone.multilingual.interfaces import ITranslationManager
 import logging
+from pyquery import PyQuery
 logger = logging.getLogger('wcc.importer')
 
 grok.templatedir('templates')
@@ -57,6 +58,9 @@ class UploadForm(form.SchemaForm):
     @z3c.form.button.buttonAndHandler(_("Setup redirects"),
                                         name='add-redirect')
     def add_redirect(self, action):
+        if self.request.method != 'POST':
+            return
+
         for i in self.context.portal_catalog(Language='all'):
             obj = i.getObject()
             anno = IAnnotations(obj).get('wcc.metadata', {})
@@ -84,6 +88,10 @@ class UploadForm(form.SchemaForm):
     @z3c.form.button.buttonAndHandler(_("Map multilingual"),
                                 name='map-multilingual')
     def map_multilingual(self, action):
+
+        if self.request.method != 'POST':
+            return
+
         for i in self.context.portal_catalog():
             obj = i.getObject()
             anno = IAnnotations(obj).get('wcc.metadata', {})
@@ -99,3 +107,23 @@ class UploadForm(form.SchemaForm):
                     continue
                 content = brains[0].getObject()
                 ITranslationManager(obj).register_translation(lang, content)
+        IStatusMessage(self.request).addStatusMessage(_("Mapping done"))
+
+    @z3c.form.button.buttonAndHandler(_("Auto set news description"),
+            name="set-newsdescription")
+    def set_newsdescription(self, action):
+        if self.request.method != 'POST':
+            return
+
+        for i in self.context.portal_catalog(portal_type="News Item",
+                                            Language='all'):
+            obj = i.getObject()
+            if obj.Description():
+               continue
+            logger.info("Setting description for %s" % obj.absolute_url())
+            text = obj.getText()
+            firstpara = PyQuery(text)('p:first').text()
+            obj.setDescription(firstpara)
+            obj.reindexObject()
+
+        IStatusMessage(self.request).addStatusMessage(_("Mapping done"))
