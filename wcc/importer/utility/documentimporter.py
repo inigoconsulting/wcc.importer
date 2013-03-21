@@ -12,6 +12,7 @@ from Products.ATContentTypes.interfaces.folder import IATFolder
 import os
 import transaction
 from Acquisition import aq_parent
+from plone.namedfile.file import NamedBlobFile
 
 class Importer(BaseImporter):
     grok.name('wcc.importer.documentimporter')
@@ -152,6 +153,13 @@ class Importer(BaseImporter):
             'description': i['description']
         } for i in entry['related_links']]
         obj.related_links = related_links
+
+        if entry['file']:
+            f = NamedBlobFile(
+                    data = b64decode(entry['file']['data']),
+                    filename=entry['file']['name']
+            )
+            obj.file = f
         
         # remember original url
         anno = IAnnotations(obj)
