@@ -9,6 +9,7 @@ from wcc.importer.utility.base import BaseImporter
 from plone.app.dexterity.behaviors.metadata import IDublinCore
 from collective.miscbehaviors.behavior.bodytext import IBodyText
 from Products.ATContentTypes.interfaces.folder import IATFolder
+from wcc.document.content.document import IDocument
 import os
 import transaction
 from Acquisition import aq_parent
@@ -51,11 +52,24 @@ class Importer(BaseImporter):
             if entry['orig_url'] in passed: 
                 continue
 
+            existing = container.portal_catalog(
+                    wcc_original_url=entry['orig_url'],
+                    Language='all')
+
+            for brain in existing:
+                self._update_content(brain.getObject(), entry)
+
+            if existing:
+                passed.append(entry['orig_url'])
+                continue
+
             objcontainer = self._find_folder(container, entry)
-
             self._document_factory(objcontainer, entry)
-
             passed.append(entry['orig_url'])
+
+
+
+        
 
     def _find_folder(self, container, entry):
         folder_url = os.path.dirname(entry['orig_url']) + '.html'
@@ -127,6 +141,23 @@ class Importer(BaseImporter):
         oid = self._create_obj_for_title(parent, 'wcc.document.document', name) 
         
         obj = parent._getOb(oid)
+
+        self._update_content(obj, entry)
+
+        if entry['is_folderish']:
+            parent.setDefaultPage(oid)
+            parent.reindexObject()
+
+        logger.info("Created %s" % obj.absolute_url())
+
+    def _update_content(self, obj, entry):
+
+        if not IDocument.providedBy(obj):
+            logger.error("%s is not document" % obj.absolute_url())
+            return 
+
+        logger.info("Updating content %s" % obj.absolute_url())
+
         obj.title = entry['title']
 
         # set description
@@ -137,15 +168,17 @@ class Importer(BaseImporter):
         edate = dateutil.parser.parse(entry['effectiveDate'])
         dcobj.effective = edate
 
-        # set bodytext
+        # set descriptors
+        dcobj.subjects = entry['related_descriptors']
 
+        # set bodytext
         IBodyText(obj).text = entry.get('bodytext','')
 
         # set main fields
 
         obj.document_owner = entry['owner'].strip()
         obj.document_type = entry['document_type']
-        obj.subjects = entry['related_descriptors']
+
         obj.document_status = entry['status']
         related_links = [{
             'url': i['url'],
@@ -168,9 +201,3 @@ class Importer(BaseImporter):
         anno['wcc.metadata']['lang_urls'] = entry['lang_urls']
         anno['wcc.metadata']['id_url'] = entry.get('id_url', None)
         obj.reindexObject()
-
-        if entry['is_folderish']:
-            parent.setDefaultPage(oid)
-            parent.reindexObject()
-
-        logger.info("Created %s" % obj.absolute_url())
