@@ -20,6 +20,8 @@ from Products.CMFCore.interfaces import ISiteRoot
 from plone.multilingual.interfaces import ITranslationManager
 import logging
 from pyquery import PyQuery
+from wcc.importer.utils import clean_url
+
 logger = logging.getLogger('wcc.importer')
 
 grok.templatedir('templates')
@@ -101,7 +103,7 @@ class UploadForm(form.SchemaForm):
             logger.info('Setting language map for %s' % obj.absolute_url())
             for lang, url in lang_urls.items():
                 brains = self.context.portal_catalog(Language='all',
-                    wcc_original_url=url)
+                    wcc_original_url=clean_url(url))
                 if not brains:
                     logger.info('No Objects Found! : %s' % url)
                     continue

@@ -1,6 +1,7 @@
 from zope.interface import Interface
 from zope.annotation.interfaces import IAnnotations
 from plone.indexer.decorator import indexer
+from wcc.importer.utils import clean_url
 
 @indexer(Interface)
 def wcc_original_url(context, **kw):
@@ -9,6 +10,8 @@ def wcc_original_url(context, **kw):
     except:
         raise AttributeError('wcc_original_url')
     if anno.has_key('wcc.metadata'):
+        url = anno['wcc.metadata']['original_url']
+        anno['wcc.metadata']['original_url'] = clean_url(url)
         return anno['wcc.metadata']['original_url']
 
 
