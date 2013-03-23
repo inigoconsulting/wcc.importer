@@ -1,7 +1,7 @@
 import urlparse
 import urllib
 
-def clean_url(url)
+def clean_url(url):
     parsed = urlparse.urlparse(url)
     qs = parsed.query
     if not qs:
