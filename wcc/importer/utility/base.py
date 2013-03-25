@@ -62,6 +62,8 @@ class BaseImporter(grok.GlobalUtility):
         return oid
 
     def find_objs_by_url(self, container, url):
+        if url.startswith('/'):
+            url = 'http://www.oikoumene.org' + url
         brains = container.portal_catalog(wcc_original_url=url, Language='all')
         result = []
         for brain in brains:
