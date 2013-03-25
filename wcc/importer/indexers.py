@@ -2,20 +2,32 @@ from zope.interface import Interface
 from zope.annotation.interfaces import IAnnotations
 from plone.indexer.decorator import indexer
 from wcc.importer.utils import clean_url
+from Products.CMFCore.interfaces import IContentish
 
-@indexer(Interface)
+@indexer(IContentish)
 def wcc_original_url(context, **kw):
     try:
         anno = IAnnotations(context)
     except:
         raise AttributeError('wcc_original_url')
-    if anno.has_key('wcc.metadata'):
-        url = anno['wcc.metadata']['original_url']
-        anno['wcc.metadata']['original_url'] = clean_url(url)
-        return anno['wcc.metadata']['original_url']
+    if not anno.has_key('wcc.metadata'):
+        raise AttributeError('wcc_original_url')
+    if not anno['wcc.metadata'].has_key('original_url'):
+        raise AttributeError('wcc_original_url')
 
+    url = anno['wcc.metadata']['original_url']
+    if isinstance(url, basestring):
+        anno['wcc.metadata']['original_url'] = [url]
 
-@indexer(Interface)
+    urls = []
+    for u in anno['wcc.metadata']['original_url']:
+        urls.append(clean_url(u))
+
+    anno['wcc.metadata']['original_url'] = urls
+    anno['wcc.metadata'].p_changed = True
+    return anno['wcc.metadata']['original_url']
+
+@indexer(IContentish)
 def wcc_id_url(context, **kw):
     try:
         anno = IAnnotations(context)

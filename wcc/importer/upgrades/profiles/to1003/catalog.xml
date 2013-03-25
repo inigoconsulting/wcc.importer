@@ -4,8 +4,4 @@
   <indexed_attr value="wcc_original_url"/>
  </index>
  <column value="wcc_original_url"/>
- <index name="wcc_id_url" meta_type="FieldIndex">
-  <indexed_attr value="wcc_id_url"/>
- </index>
- <column value="wcc_id_url"/>
 </object>
