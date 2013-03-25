@@ -15,6 +15,7 @@
 
     <include package=".behavior"/>
     <include package=".portlet"/>
+    <include package=".browser"/>
 
     <adapter name="wcc_original_url" factory=".indexers.wcc_original_url"/>
     <adapter name="wcc_id_url" factory=".indexers.wcc_id_url"/>

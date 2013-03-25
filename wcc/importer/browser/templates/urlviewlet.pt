@@ -1,0 +1,9 @@
+<div id="wcc-url-viewlet" tal:condition="view/anno"
+    style="font-size:10px">
+Original URLS:
+<ul>
+    <li tal:repeat="url view/urls" style="display:block">
+        <a tal:attributes="href url" tal:content="url"></a>
+    </li>
+</ul>
+</div>

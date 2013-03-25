@@ -1,0 +1,12 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+            xmlns:browser="http://namespaces.zope.org/browser">
+
+    <browser:viewlet
+        name="wcc.importer.urlviewlet"
+        manager="plone.app.layout.viewlets.interfaces.IBelowContent"
+        class=".viewlet.URLViewlet"
+        permission="cmf.ManagePortal"
+        layer="..interfaces.IProductSpecific"
+        />
+
+</configure>
