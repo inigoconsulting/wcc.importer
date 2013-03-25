@@ -28,7 +28,7 @@ def wcc_original_url(context, **kw):
             urls.append(anno['wcc.metadata']['id_url'])
             urls.append('http://www.oikoumene.org' + anno['wcc.metadata']['id_url'])
 
-    anno['wcc.metadata']['original_url'] = urls
+    anno['wcc.metadata']['original_url'] = list(set(urls))
     anno['wcc.metadata'].p_changed = True
     return anno['wcc.metadata']['original_url']
 
