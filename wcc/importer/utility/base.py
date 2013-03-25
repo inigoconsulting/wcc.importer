@@ -61,4 +61,15 @@ class BaseImporter(grok.GlobalUtility):
 
         return oid
 
+    def find_objs_by_url(self, container, url):
+        brains = container.portal_catalog(wcc_original_url=url, Language='all')
+        result = []
+        for brain in brains:
+             result.append(brain.getObject())
+        return result
 
+    def find_obj_by_url(self, container, url):
+        result = self.find_objs_by_url(container, url)
+        if result:
+            return result[0]
+        return None
