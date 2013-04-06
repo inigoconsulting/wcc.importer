@@ -77,6 +77,20 @@ class UploadForm(form.SchemaForm):
             if id_url:
                 self._add_redirect(id_url, obj)
 
+        for i in self.context.portal_catalog(Language='all',
+                portal_type=[
+                    'wcc.churches.churchbody',
+                    'wcc.churches.churchfamily',
+                    'wcc.churches.churchmember',
+                    'wcc.churches.region',
+                    'wcc.churches.country'
+                ]):
+                obj = i.getObject()
+                path = '%s.html' % '/'.join(
+                    [''] + list(obj.getPhysicalPath()[2:])
+                )
+                self._add_redirect(path, obj)
+
         IStatusMessage(self.request).addStatusMessage(_("Redirection added"))
 
     def _add_redirect(self, from_url, obj):
