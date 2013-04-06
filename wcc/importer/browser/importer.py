@@ -70,22 +70,28 @@ class UploadForm(form.SchemaForm):
             id_url = anno.get('id_url', None)
             if not from_url:
                 continue
-            logger.info("Setting redirects for %s" % obj.absolute_url())
-            from_url = urlparse.urlparse(from_url).path
-            portal = getUtility(ISiteRoot)
-            from_url = '/'.join(portal.getPhysicalPath()) + from_url
+
+            for url in from_url:
+                self._add_redirect(url, obj)
+                if '.html' in url:
+                    self._add_redirect(url.replace('.html',''), obj)
+
             if id_url:
-                id_url = '/'.join(portal.getPhysicalPath()) + id_url
-            to_url = '/'.join(obj.getPhysicalPath())
-            storage = getUtility(IRedirectionStorage)
-            if storage.has_path(from_url):
-                storage.remove(from_url)
-            if id_url and storage.has_path(id_url):
-                storage.remove(id_url)
-            storage.add(from_url, to_url)
-            if id_url:
-                storage.add(id_url, to_url)
+                self._add_redirect(id_url, obj)
+
         IStatusMessage(self.request).addStatusMessage(_("Redirection added"))
+
+    def _add_redirect(self, from_url, obj):
+        logger.info("Redirect %s to %s" % (from_url, obj.absolute_url()))
+        from_url = urlparse.urlparse(from_url).path
+        portal = getUtility(ISiteRoot)
+        from_url = '/'.join(portal.getPhysicalPath()) + from_url
+        to_url = '/'.join(obj.getPhysicalPath())
+        storage = getUtility(IRedirectionStorage)
+        if storage.has_path(from_url):
+            storage.remove(from_url)
+        storage.add(from_url, to_url)
+
 
     @z3c.form.button.buttonAndHandler(_("Map multilingual"),
                                 name='map-multilingual')
