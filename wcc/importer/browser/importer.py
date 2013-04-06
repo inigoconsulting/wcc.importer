@@ -73,8 +73,6 @@ class UploadForm(form.SchemaForm):
 
             for url in from_url:
                 self._add_redirect(url, obj)
-                if '.html' in url:
-                    self._add_redirect(url.replace('.html',''), obj)
 
             if id_url:
                 self._add_redirect(id_url, obj)
