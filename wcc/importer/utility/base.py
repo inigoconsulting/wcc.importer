@@ -16,15 +16,18 @@ class BaseImporter(grok.GlobalUtility):
     def run_import(self, container, data):
         passed = []
         for entry in data:
-            entry['orig_url'] = self._clean_url(entry['orig_url'])
-            if entry.has_key('lang_urls'):
-                entry['lang_urls'] = self._clean_langurls(entry['lang_urls'])
-
-            if entry['orig_url'] in passed:
-                continue
+            if entry.has_key('orig_url'):
+                entry['orig_url'] = self._clean_url(entry['orig_url'])
+                if entry.has_key('lang_urls'):
+                    entry['lang_urls'] = self._clean_langurls(entry['lang_urls'])
+    
+                if entry['orig_url'] in passed:
+                    continue
 
             self._factory(container, entry)
-            passed.append(entry['orig_url'])
+
+            if entry.has_key('orig_url'):
+                passed.append(entry['orig_url'])
 
 
     def _clean_url(self, url):
