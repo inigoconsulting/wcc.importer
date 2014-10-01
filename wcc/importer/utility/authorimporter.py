@@ -15,7 +15,7 @@ class Importer(BaseImporter):
 
     def _factory(self, container, entry):
 
-        title = '%s %s' % (entry['name'], entry['surname'])
+        title = '%s' % (entry.get('By (author)', 'Unknown'))
 
         logger.info("Creating Author : %s" % title)
 
@@ -23,9 +23,8 @@ class Importer(BaseImporter):
         obj = container._getOb(oid)
 
         obj.setTitle(title)
-        obj.name = entry['name']
-        obj.surname = entry['surname']
-        obj.biography = entry['biography']
+        obj.name = entry.get('By (author)', 'Unknown')
+        obj.biography = entry.get('Author Information', '')
 
         anno = IAnnotations(obj)
         anno.setdefault('wcc.metadata', PersistentDict())
