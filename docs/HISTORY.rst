@@ -1,6 +1,12 @@
 Changelog
 =========
 
+. (unreleased)
+--------------
+
+- Nothing changed yet.
+
+
 1.18 (2014-10-02)
 -----------------
 

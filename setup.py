@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import os
 
-version = '1.18'
+version = '..dev0'
 
 setup(name='wcc.importer',
       version=version,
