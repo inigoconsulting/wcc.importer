@@ -60,8 +60,9 @@ class Importer(BaseImporter):
 
         obj.authors = authors
         obj.subtitle = entry.get('Sub-title', None)
+        obj.description = entry.get('Description', None)
         obj.setTitle(entry['Title'])
-        obj.setSubject(entry['Subjects'])
+        obj.setSubject(entry['Subjects'].split(':'))
 
         obj.issue_date = dateutil.parser.parse(
             entry['Published'],
@@ -73,10 +74,10 @@ class Importer(BaseImporter):
                                        filename=entry['image'])
         obj.series_title = entry.get('Series', None)
         obj.edition = entry.get('Edition Statement', None)
-        obj.book_subjects = entry['Subjects']
         obj.toc = entry.get('Table of Contents', None)
         obj.price = float(entry.get('Price', None) or 0)
-        obj.isbn = entry.get('ISBN13', None)
+        obj.isbn13 = entry.get('ISBN13', None)
+        obj.isbn10 = entry.get('ISBN10', None)
 
         anno = IAnnotations(obj)
         anno.setdefault('wcc.metadata', PersistentDict())

@@ -23,8 +23,7 @@ class Importer(BaseImporter):
         obj = container._getOb(oid)
 
         obj.setTitle(title)
-        obj.name = entry.get('By (author)', 'Unknown')
-        obj.biography = entry.get('Author Information', '')
+        obj.description = entry.get('Author Information', '')
 
         anno = IAnnotations(obj)
         anno.setdefault('wcc.metadata', PersistentDict())
