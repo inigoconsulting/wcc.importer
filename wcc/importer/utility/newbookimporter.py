@@ -71,7 +71,7 @@ class Importer(BaseImporter):
         obj.pages = int(entry.get('pages', None) or 0)
         if entry.get('image', ''):
             obj.image = NamedBlobImage(b64decode(entry['image']),
-                                       filename=entry['image'])
+                        filename=entry['Title'].replace(' ', '_') + ".jpeg")
         obj.series_title = entry.get('Series', None)
         obj.edition = entry.get('Edition Statement', None)
         obj.toc = entry.get('Table of Contents', None)
